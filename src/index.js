@@ -1,55 +1,62 @@
-//variables
-//displaying card destination
-const menuContainer = document.getElementById('ramen-menu');
-//card variables
-const imageElement = document.querySelector('.detail-image');
-const nameElement = document.querySelector('.name');
-const restaurantElement = document.querySelector('.restaurant');
-const ratingElement = document.querySelector('#rating-display');
-const commentElement = document.querySelector('#comment-display');
+document.addEventListener('DOMContentLoaded', () => {
+    retrieveData()
+})
 
-//form variable
-const formElement =document.getElementById('new-ramen');
+function retrieveData(){
+    fetch('http://localhost:3000/ramens')
+    .then(response => response.json())
+    .then(data => {
+            // console.log(data)
+        //wishlist of functions
+        //render the nav bar items
+        data.forEach((singleRamen)=> renderNavBarItems(singleRamen))
+        //render detail section
+        renderDetailSection(data[0])
+        // add form function
+        addNewRamen()
+    })
+};
 
+// this is my function to render the nav bar items
+function renderNavBarItems(singleRamen){
+    const navBar = document.querySelector("#ramen-menu")
+    // creating the images for each one
+    let image = document.createElement("img")
+    // updating image src
+    image.src = singleRamen.image
+    // image event listener not working...please help
+    image.addEventListener("click", ()=>{renderDetailSection(singleRamen)})
+    navBar.append(image)
+}
 
-fetch('http://localhost:3000/ramens')
-  .then(response => response.json())
-  .then(allRamen => {
-    showRamen(allRamen[2]);
-    allRamen.forEach(oneRamen => {
-      renderImage(oneRamen)
+function renderDetailSection(data){
+    let comment = document.querySelector("#comment-display")
+    let name = document.querySelector(".name")
+    let restaurant = document.querySelector(".restaurant")
+    let image = document.querySelector(".detail-image")
+    let rating= document.querySelector("#rating-display")
+    image.src = data.image
+    comment.textContent = data.comment
+    name.textContent = data.name
+    restaurant.textContent = data.restaurant
+    rating.textContent = data.rating
+}
+
+function addNewRamen(){
+    const form = document.querySelector("#new-ramen")
+    form.addEventListener("submit", (e)=>{
+        e.preventDefault()
+        const newRamen = {
+            "name": document.getElementById("new-name").value,
+            "restaurant": document.getElementById("new-restaurant").value,
+            "rating": document.getElementById("new-rating").value,
+            "image": document.getElementById("new-image").value,
+            "comment": document.getElementById("new-comment").value
+        }
+        renderNavBarItems(newRamen)
     });
-  }
-  )
-//first deliverable: render images
-function renderImage(ramenObject){
-  const img = document.createElement('img');
-  //second deliverable: display ramen after clicking
-  img.addEventListener('click', () => {
-    showRamen(ramenObject);
-  });
-  img.src = ramenObject.image
-  menuContainer.append(img)
 }
-//second deliverable: display first ramen
-function showRamen(ramenObject){
-  imageElement.src = ramenObject.image
-  nameElement.textContent = ramenObject.name
-  restaurantElement.textContext = ramenObject.restaurant
-  ratingElement.textContent = ramenObject.rating
-  commentElement.textContent = ramenObject.comment
-}
-//third deliverable: add new ramen nav bar
-formElement.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const newRamen = {
-    name: e.target.name.value,
-    restaurant: e.target.restaurant.value,
-    image: e.target.image.value,
-    rating: e.target.rating.value,
-    comment: e.target["new-comment"].value
-    }
-  console.log(newRamen)
-  renderImage(newRamen)
-  console.log(e)
-});
+
+
+
+
